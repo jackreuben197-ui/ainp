@@ -1,0 +1,45 @@
+minimum_strategy_decisions: 100
+min_preflop_fold_rate: 0.45
+max_preflop_fold_rate: 0.75
+min_preflop_aggression_rate: 0.05
+max_preflop_aggression_rate: 0.35
+max_http_error_rate: 0.02
+max_engine_failures: 0
+max_intent_conflicts: 0
+max_high_equity_preflop_folds: 0
+high_equity_threshold: 0.65
+max_strategy_p95_us: 100000
+# Bot scheduling owns humanized delay; AinP should respond promptly.
+max_http_p95_us: 100000
+max_gray_candidate_errors: 0
+max_game_logic_errors: 0
+max_wrong_sequence_errors: 0
+max_action_type_deviations: 0
+max_default_profile_fallbacks: 0
+# A process restart can receive tail events from hands that started before AinP.
+# Keep these visible, but separate them from actionable runtime protocol errors.
+startup_boundary_grace_ms: 60000
+# A player stream starting well after another player already observed EndHand is
+# historical backlog, not a live advice/execution mismatch.
+late_stream_after_end_threshold_ms: 1000
+delayed_deal_threshold_ms: 1000
+max_delayed_deal_decision_p95_us: 100000
+max_rejected_deal_cards: 0
+max_delayed_deals_without_advice: 0
+min_river_air_call_equity_edge: 0.10
+max_negative_ev_calls: 0
+max_questionable_air_calls: 0
+max_free_option_folds: 0
+# Three-street high-card calls remain visible with per-street examples, but only
+# negative-EV or insufficient-river-edge calls fail the audit. Uncomment to add
+# a style-specific hard cap after enough human-player production data exists.
+# max_air_call_down_hands: 0
+# Profile targets are statistical controls, so only evaluate them after a
+# meaningful sample and allow normal random variation.
+minimum_profile_hands: 1000
+max_vpip_deviation: 0.05
+max_pfr_deviation: 0.05
+# Informational anomaly thresholds shown in Admin. These do not automatically
+# fail the audit because low-equity bluffs and river traps can be intentional.
+low_equity_allin_threshold: 0.35
+river_high_equity_threshold: 0.80
