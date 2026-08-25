@@ -1,0 +1,7 @@
+/ainp
+/build/
+/logs/
+/data/replay/
+/reports/
+*.local.yaml
+.DS_Store
