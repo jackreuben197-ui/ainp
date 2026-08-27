@@ -1,4 +1,4 @@
-module gitlab.com/ubenbill/ainp
+module gitlab.com/smoothsics/ainp
 
 go 1.23.4
 

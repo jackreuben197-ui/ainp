@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"math"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/opponent"
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/opponent"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 type GrayDecisionProvider struct {

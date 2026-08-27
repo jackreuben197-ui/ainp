@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 func TestMemoryHandStoreSequenceAndIdempotency(t *testing.T) {

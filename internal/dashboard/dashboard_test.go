@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/config"
 )
 
 func TestManagerRunsAuditAndPublishesReport(t *testing.T) {

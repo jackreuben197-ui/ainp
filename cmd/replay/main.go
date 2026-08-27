@@ -13,11 +13,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/protocol"
-	"gitlab.com/ubenbill/ainp/internal/replay"
-	"gitlab.com/ubenbill/ainp/internal/service"
-	"gitlab.com/ubenbill/ainp/internal/store"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/replay"
+	"gitlab.com/smoothsics/ainp/internal/service"
+	"gitlab.com/smoothsics/ainp/internal/store"
 )
 
 type comparison struct {

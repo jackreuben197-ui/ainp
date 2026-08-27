@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/equity"
-	"gitlab.com/ubenbill/ainp/internal/poker"
-	"gitlab.com/ubenbill/ainp/internal/strategy"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/strategy"
 )
 
 type report struct {

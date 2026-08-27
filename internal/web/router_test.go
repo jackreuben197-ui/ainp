@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/dashboard"
-	"gitlab.com/ubenbill/ainp/internal/protocol"
-	"gitlab.com/ubenbill/ainp/internal/service"
-	"gitlab.com/ubenbill/ainp/internal/store"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/dashboard"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/service"
+	"gitlab.com/smoothsics/ainp/internal/store"
 )
 
 func TestAiconCompatibleFlow(t *testing.T) {

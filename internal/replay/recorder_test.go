@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 func TestJSONLRecorderPersistsReplayableRecord(t *testing.T) {

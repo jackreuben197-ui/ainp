@@ -12,12 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/dashboard"
-	"gitlab.com/ubenbill/ainp/internal/replay"
-	"gitlab.com/ubenbill/ainp/internal/service"
-	"gitlab.com/ubenbill/ainp/internal/store"
-	"gitlab.com/ubenbill/ainp/internal/web"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/dashboard"
+	"gitlab.com/smoothsics/ainp/internal/replay"
+	"gitlab.com/smoothsics/ainp/internal/service"
+	"gitlab.com/smoothsics/ainp/internal/store"
+	"gitlab.com/smoothsics/ainp/internal/web"
 )
 
 func main() {

@@ -10,8 +10,8 @@ import (
 	"math/rand"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/equity"
-	"gitlab.com/ubenbill/ainp/internal/personality"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/personality"
 )
 
 var ErrInvalidStrategyInput = errors.New("invalid strategy input")

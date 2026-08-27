@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/game"
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 type ApplyResult int

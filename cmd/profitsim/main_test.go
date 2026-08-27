@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/config"
 )
 
 func TestProfitSimulationIsDeterministic(t *testing.T) {

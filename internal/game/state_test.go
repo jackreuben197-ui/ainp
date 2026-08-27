@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 func TestStateTracksTurnOrderBetsAndBoard(t *testing.T) {

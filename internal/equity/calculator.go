@@ -7,7 +7,7 @@ import (
 	"math"
 	"time"
 
-	"gitlab.com/ubenbill/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 var (

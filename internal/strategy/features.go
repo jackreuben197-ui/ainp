@@ -3,8 +3,8 @@ package strategy
 import (
 	"fmt"
 
-	"gitlab.com/ubenbill/ainp/internal/equity"
-	"gitlab.com/ubenbill/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 func buildFeatures(req Request) (Features, error) {

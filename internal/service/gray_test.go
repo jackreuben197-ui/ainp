@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"gitlab.com/ubenbill/ainp/internal/config"
-	"gitlab.com/ubenbill/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 func TestGrayAssignmentIsStableForAHand(t *testing.T) {
