@@ -1,0 +1,46 @@
+# 运行审计后台
+
+运行后台与 AinP 使用同一个 HTTP 服务，默认地址为 `/admin`。页面本身不展示敏感数据；读取状态、报告和触发分析的 API 都要求与 `/v1` 相同的 Bearer token。浏览器只把输入的 token 保存到当前标签页的 `sessionStorage`，不会放入 URL 或服务端日志。
+
+## 配置
+
+```yaml
+admin:
+  enabled: true
+  path: /admin
+  log_path: build/nohup.out
+  expectations_path: conf/audit.yaml
+  report_path: reports/audit-runtime.json
+  refresh_interval: 0s
+```
+
+所有字段均为可选扩展，`enabled` 默认关闭，不改变原有 AiCon 接口。路径相对于 AinP 进程工作目录。`refresh_interval: 0s` 表示只允许人工刷新；对于数百 MB 或更大的日志建议保持该值，避免周期性全文件扫描与在线决策竞争 CPU/磁盘。确需定时刷新时可设置 `30m` 等 Go duration。
+
+## 页面和 API
+
+- `GET /admin`：内嵌页面，不依赖外部 CDN。
+- `GET /admin/api/status`：进程运行时长、日志大小和更新时间、分析任务状态、最近错误。
+- `GET /admin/api/report`：当前审计报告。
+- `POST /admin/api/refresh`：异步启动一次流式日志分析；正在运行时返回 409。
+
+面板将“运行期拒绝发牌”和“启动边界事件”分开显示。前者应为 0；后者表示进程重启时接入了缺少开局事件的旧手牌，只做黄色观察，并展示最多 20 条定位样本。`conf/audit.yaml` 的 `startup_boundary_grace_ms` 控制启动宽限期，默认 60 秒。
+
+“迟到补发玩家事件流”包含两种情况：同桌至少一个玩家已经记录 EndHand 后才开始补发，或牌局尚未结束但其他玩家流的同桌事件序号已经明显前进后才从 StartHand 开始补发。面板分别显示两类数量、开始延迟、开始时同桌最大序号、实际/建议动作和 advice 到广播的间隔。这类偏差不属于 AinP 实时执行偏差，但应检查调用方对应连接是否存在消息积压。
+
+后台扫描不会阻塞 HTTP 请求线程。完成后先写临时文件再原子替换报告，页面轮询状态并自动读取新报告。可视化内容包括 HTTP/策略延迟、协议错误、延迟发牌、负 EV 与空气牌跟注、河牌低边际一对跟注、动作和街道分布、质量门禁、AiProfile 实际/目标 VPIP/PFR、主要错误消息及可疑跟注样例。河牌跟注统计同时给出旧日志可计算的宽口径，以及新日志中的公共牌对子、同花落空、顺子落空、任一听牌落空和连续追牌精确口径；没有新版结构化字段的旧日志不能反推精确口径。翻前大额跟注面板展示新版 `preflop_large_call_outside_range` 保护遗漏、`PREFLOP_PROFILE_LARGE_CALL_FOLD` 保护命中，以及旧日志中“面对至少两次加注仍然跟注”的宽口径候选；旧日志缺少 BB 阈值和派生范围字段，候选不等同于确定缺陷。Underpair 面板只把最终牌型仍为一对的口袋小对子计入精确跟注；已改善为两对、三条等 `made_strong`，或同时具有有效听牌的 `made_draw` 不再误算为弱 Underpair。通过赔率与安全边际后仍有正期望的 Underpair 跟注是观察项，`POSTFLOP_UNDERPAIR_FOLD` 才是保护命中；旧候选无法从脱敏日志恢复公共牌，因此可能包含少量 overpair。特殊永不弃牌风格会列出全部输牌，点击单手的“查看”按钮会弹窗展示该手的阶段、动作、金额、牌力、胜率、底池赔率、跟注 EV 和策略规则。状态错误同时展示原始次数与按事件指纹去重后的唯一事件数，并保留最多 20 个状态错误、建议执行偏差及三条街高牌跟注的代表样例，因此通常无需重新读取 GB 级原始日志。
+
+实际 VPIP/PFR 会始终显示；Profile 表同时展示“面对翻前加注再加注”的比例和样本数，用于观察 3-bet/4-bet 是否因多机器人独立决策而异常密集。顶部“尾筹归并全下”卡片统计新版日志中因房间百分比配置把 Call/Bet/Raise 归并成 All-in 的次数，并区分跟注与主动下注/加注；旧日志没有归并前动作字段，无法精确反推该指标。`conf/audit.yaml` 的 `enforce_profile_rates` 控制 VPIP/PFR 是否作为质量门禁：只有各 profile 获得近似均匀随机手牌时才应开启。若调度按预获取牌型将最大牌定向赋给特殊风格，其他风格的样本分布会系统性偏弱，观察频率不能直接与配置的起手牌范围宽度比较。
+
+“特殊永不弃牌风格统计”只收集 `audit_exempt: true` 的 profile。其策略决策不会进入总体动作率、VPIP/PFR 偏差、负 EV 跟注、高牌跟注或建议执行偏差门禁；HTTP、协议和状态错误仍照常统计。独立块展示手数/决策数、输赢和平局次数、胜率、净输赢、每手平均输赢、到达 flop/turn/river 的次数与比例、面对加注时再次加注的次数、低胜率全下以及动作分布。顶部同时展示最终建议 All-in 的次数/手数，以及“顶张以下一对面对重复加注”的继续加注和保护弃牌次数。
+
+生产环境应通过防火墙、内网入口或反向代理限制 `/admin` 的网络访问，并通过 `AINP_AUTH_TOKEN` 设置强 token。后台报告只包含派生手牌类别和定位 ID，不包含原始底牌。
+
+“牌局逻辑错误”门禁只统计未恢复错误。调用方发送非法事件后，如果使用同一玩家、牌桌、手牌、`seq_num` 和命令类型补发了可接受事件，Admin 会将原拒绝计入“已恢复拒绝”；原始拒绝仍保留在 `decision_errors` 中供排查，但不再阻断门禁。不同命令占用同一序号不视为恢复，例如缺少 Turn 导致 River 被拒绝后改发 Action，仍然保留为街道缺失错误。
+
+`free_call_total_normalizations` 统计服务端将大盲免费看牌编码成 Call，并把已经投入的盲注作为 `value` 重复上报的兼容归一次数。该动作按零筹码 Check 记账，不重复增加底池，也不计入 VPIP；Admin 在“牌局逻辑错误”卡片中展示该数量，便于确认兼容分支是否仍被调用。
+
+`profit_control_evaluations` 统计普通风格达到大额动作阈值并计算同桌盈利保护的次数，`profit_control_applications` 是其中实际改变动作的次数；后者再拆分为大额跟注弃牌和加注降级。该卡片用于确认新保护是否工作及是否命中过多，不作为错误门禁。
+
+`incomplete_showdown_hands` 统计至少两名玩家亮牌、但 AinP 记录的公共牌不足五张的牌局。正常摊牌该值必须为零；非零通常表示 pokerbot 漏发 Turn/River，策略会错误地继续按旧街道和旧牌面决策。
+
+新增六组翻后纪律指标：`capped_pair_aggressive_actions` 只统计最终仍是一对、且没有有效听牌的口袋小对子或顶张以下一对主动进攻；`four_straight_weak_continues` 只统计四连张牌面上未成顺子且面对加注、多人底池或至少半池下注时继续投入；`paired_board_weak_aggression` 统计主要由公共牌构成的牌力，或旧版通用薄价值规则用脆弱两对进攻，专用 `POSTFLOP_PAIRED_BOARD_THIN_VALUE` 不算异常；`three_flush_one_pair_aggression` 只统计三同花牌面没有有效听牌的一对主动进攻；`river_one_pair_reraises` 统计河牌只有一对仍对加注再次加注；`special_repeated_weak_aggression` 根据请求中已执行的激进行为次数，统计特殊风格同一手之后仍用空气牌、脆弱一对/两对或主要由公共牌构成的牌力主动进攻。跟注型 All-in、成牌加听牌的半诈唬和特殊风格行为不会混入普通门禁；改善成三条、顺子、同花或葫芦后遗留的 `pocket_pair_under_board` 特征也不会误报为封顶一对。六项门禁正常值均为零。对应的 `*_guards` 指标用于确认新版控池、弃牌和连续弱牌进攻阻断规则确实被调用。报告同时为每类保留最多 10 条 `postflop_discipline_examples`，Admin 直接展示牌桌、手牌、玩家、动作金额、胜率和规则 ID，后续通常无需再次扫描原始大日志。

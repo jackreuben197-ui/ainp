@@ -1,0 +1,106 @@
+# 配置说明
+
+运行审计后台的开关、文件路径和刷新策略见 [runtime-dashboard.md](runtime-dashboard.md)。后台配置为可选扩展，默认值不会改变现有 `/v1` 协议。
+
+配置文件使用严格 YAML；未知字段会导致启动失败，避免拼写错误被静默忽略。环境变量目前支持 AINP_MODE、AINP_SERVER_HOST、AINP_SERVER_PORT、AINP_AUTH_TOKEN 和 AINP_LOG_LEVEL。
+
+## 模式与降级
+
+- `mode: engine`：真实状态 + Equity + 策略；要求 engine/equity/strategy/infer_legal_actions 全部启用。
+- `mode: mock`：只返回 mock 配置，用于协议诊断。
+- `engine.fallback_to_mock`：真实计算超时或失败时是否使用 mock；失败和降级都会单独记录。
+- `engine.advise_on`：允许触发决策的事件类型，默认 deal/action/flop/turn/river；即使事件在列表中，也只有轮到英雄才建议。
+
+## 计算与资源
+
+- `decision_timeout`：一次策略/Equity 计算上限，不包含可选思考等待。
+- `max_concurrent`：计算并发槽，4CPU 推荐 3。
+- `default_level`：第一版策略强度 1～5。
+- `game_aliases`：外部玩法名映射到 NLH/PLO4/PLO5/PLO6/SHORT_DECK/SHORT_DECK_FIXED。默认将 NLHB/NLP 映射为 NLH、PLO 映射为 PLO4。
+- `equity.*_samples`、`max_exact_outcomes`：各玩法采样与精确枚举边界。
+- `preflop_lookup_enabled/auto_exact_enabled`：翻牌前查表和小搜索空间自动精确枚举开关；关闭后 Auto 使用 Monte Carlo。
+- `cache_enabled/cache_capacity`：精确结果进程内缓存。
+- `state.ttl/max_hands/prune_interval`：牌局状态留存和容量边界。
+
+## 策略与拟人
+
+- `strategy.enabled`：策略总开关；真实模式必须开启。
+- `strategy.infer_legal_actions`：从事件推导合法动作；AiCon v1 必须开启。
+- `strategy.min_raise_big_blinds`：最小完整下注/加注的盲注下限。
+- `preflop_open_call_gap`：开池加注阈值与允许入池阈值的差，越小越紧。
+- `preflop_reraise_equity`：面对加注时再加注的单挑起手牌强度基线。
+- `preflop_reraise_range_factor`：面对首次加注时，将 Profile PFR 收窄为 3-bet 范围的比例；默认 `0.4`，例如 PFR 15% 对应约 6% 的 3-bet 范围。
+- `preflop_extra_raise_penalty`：面对第二次及后续加注时提高再加注阈值。
+- `preflop_multiway_penalty`：每增加一名对手对开池/再加注阈值的收紧幅度。
+- `preflop_call_margin`：相对 Pot Odds 的基础安全边际。
+- `preflop_large_call_threshold_bb`：面对加注时，单次跟注达到该 BB 数后启用风格范围保护；随已面对加注次数收紧继续范围，避免用“对随机牌胜率”接大额再加注或 all-in。特殊 `aggressive_never_fold` 风格不受此保护影响。
+- `underpair_call_margin`：转牌或河牌用低于公共牌的口袋对子面对下注时追加的安全边际；连续跟注还会叠加 `repeated_air_call_penalty`，避免随机范围胜率高估弱 bluff-catcher。
+- `turn_weak_draw_call_margin`：转牌仅剩 4 张或更少补牌时的额外跟注安全边际。
+- `river_board_pair_call_margin`：河牌仅使用公共牌对子 bluff-catch 时的额外安全边际。
+- `river_missed_draw_call_margin`：河牌顺子或同花听牌落空且仅使用公共牌对子时继续追加的安全边际。
+- `profit_control.enabled`：开启同桌盈利与动作结构保护。账本以 `table_id + player_id` 为键，在进程内累计 `end_hand` 的原始筹码输赢，并记录机器人实际执行的 Call/Bet/Raise/All-in；不改变 HTTP 协议。
+- `profit_control.ttl/max_players`：桌级账本的空闲过期时间和容量上限。服务重启或超过 TTL 后重新以该机器人下一手的起始筹码作为基准。
+- `large_action_bb/large_action_stack_ratio`：动作支付额同时换算为 BB 和操作前剩余筹码占比；任一超过阈值才启动保护，小额正常跟注不会因累计盈亏被误伤。
+- `profit_trigger_bb/profit_trigger_stack_ratio`：累计盈利达到阈值后逐步提高大额动作所需胜率，用于锁定部分盈利；盈利侧权重是亏损侧的一半。
+- `loss_trigger_bb/loss_trigger_stack_ratio`：累计亏损达到阈值后提高大额动作所需胜率，避免追损和继续输掉大底池。
+- `minimum_actions/call_rate_target/aggression_rate_target`：样本达到最低实际动作数后，Call 或激进行为比例超过目标会增加对应大额动作的胜率要求。特殊永不弃牌风格的动作不进入比例统计。
+- `max_exposure_margin/max_performance_margin/max_action_mix_margin/max_total_margin`：资金暴露、桌级盈亏、动作结构三类胜率附加边际及合计上限。`FPCH_100_50` 的 `aggressive_never_fold` 明确绕过全部盈利保护，仍然跟到底；已有 `large_pot_min_equity` 的风格全程以其专用校准规则为准，不重复收紧。
+- `personality.enabled`：人格阈值与下注尺度。
+- `humanization_enabled`：有界慢打/边缘失误。
+- `think_time_enabled`：生成确定性思考时间。
+- `apply_think_time`：在返回 advice 前实际等待思考时间；关闭时仍可在策略日志观察建议时间。
+- `use_ai_profile/default/profile_map`：兼容旧的 AiProfile→人格字符串映射；未知值使用 default 和 `engine.default_level`。
+- `personality.profiles`：推荐的复合风格映射。每个 AiProfile 可同时指定 `personality`、1～5 的 `level`、`target_vpip`、`target_pfr` 和说明。目标必须满足 `0 <= PFR <= VPIP <= 1`。它在每次 `start_hand_extended` 独立解析，同一 AinP 实例可并行服务不同风格，机器人也可在下一手切换风格。
+- `FPCH_100_50` 是特殊永不弃牌风格：`target_vpip: 1`、`preflop_raise_probability: 0.5`、`postflop_aggression_probability: 0.75`。概率按每手计算，不会在同一手牌的每次决策上重复触发；翻前概率只控制 Open Raise，面对加注不再 Re-Raise，每条翻后街最多主动加注一次。低 SPR 且没有使用底牌成牌时优先过牌，防止弱牌形成确定性的 5-bet 或空气牌主动 All-in。`never_fold: true` 保证合法动作降级也只会 Call/Check/All-in，`audit_exempt: true` 将其策略行为从普通异常门禁移到独立统计块。
+- 配置已覆盖 AiCon `fpch_profile.csv` 的 19 个名字（含 S1/S2 后缀）。S1/S2 在原说明中只区分翻牌后下注尺度，因此继承同一基础人格和等级；原尺度通过各 profile 的 `postflop_sizings` 显式配置。策略先按牌力和场景生成基础尺度，再吸附到该列表中最接近的允许档位；面对下注时，档位控制跟注额之外的加注尺度，并仍遵守最小加注和有效筹码约束。原始资料中 `FPCH_defaul_S1` 的尺度为空，因此该项不配置数组并继承基础策略。
+- `opponent_model.enabled/max_players/dedupe_window`：基础玩家统计及内存边界。
+
+## 日志
+
+`log.access`、`log.events`、`log.strategy` 分别控制每次 HTTP、事件结果和策略明细日志。生产排错与统计建议全部开启；如磁盘压力过大，应由日志采集器缩短本地留存，不建议关闭 access/events。
+
+`strategy_decision` 中的 `ai_profile` 是调用方原值，`personality_id`、`strategy_level`、`target_vpip`、`target_pfr`、`behavior_mode`、`audit_exempt` 是本手牌实际解析结果，`profile_source` 表示来自 `profiles`、旧 `profile_map`、内置人格名或默认降级。验收时应按这些字段分组，不能只看总体 Fold 率；生产门禁默认不允许出现未配置风格的 `default` 降级。
+
+盈利保护的每次评估也写入同一条 `strategy_decision`：`table_net_profit/table_initial_stack` 是指标 A 的桌级资金状态，`profit_control_action_bb/profit_control_action_stack_ratio` 是本次风险暴露，`equity` 是获胜预估指数 C；三个 `*_margin` 及 `profit_control_total_margin` 给出阈值修正，`profit_control_applied=true` 表示它实际把大额 Call/加注降为 Fold、Call 或 Check。原始 profit 始终按筹码累计，只在决策和日志中除以本手 BB，避免不同盲注下累计时丢失精度。
+
+修改风格范围后执行百万手验收：
+
+```bash
+go run ./cmd/profilesim \
+  -config conf/config.yaml \
+  -hands 1000000 \
+  -tolerance 0.002 \
+  -output reports/profile-sim-latest.json
+```
+
+`hands` 是每个已配置 profile 的样本量，而不是所有 profile 合计样本量。程序调用真实策略引擎，任一风格 VPIP/PFR 的绝对误差超过容差会以非零状态退出。
+
+`FPCH_90_5` 还配置 `large_pot_threshold_bb` 和 `large_pot_min_equity`：保持 90/5 翻前统计；达到 20BB 大底池阈值后，低于 58% 估算胜率只 check/fold。收益基准可执行：
+
+```bash
+go run ./cmd/profitsim \
+  -config conf/config.yaml \
+  -profile FPCH_90_5 \
+  -hands 1000000 \
+  -equity-samples 16 \
+  -rake 0.05 \
+  -output reports/profit-sim-FPCH_90_5-1m.json
+```
+
+该工具模拟 100BB 单挑、固定松被动对手、完整公共牌、真实策略决策及 5% 抽水，报告总胜率、摊牌胜率、BB/100、95% 置信区间及大小底池收益。只有 BB/100 的 95% 置信区间下界为正、大底池总收益为正且小底池平均损失不超过 0.5BB 才标记 `passed=true`，否则非零退出。它是可重复的回归基准，不代表对任意真人、任意抽水结构都保证盈利。
+
+`cmd/profitsim` 会跨手累计同桌输赢和动作比例，并在报告中输出 `profit_control_enabled`、`profit_control_applications`。使用相同手数、采样数和固定牌序再加 `-disable-profit-control` 可单独关闭通用盈利保护做 A/B；原有 `-disable-risk-control` 会同时关闭 profile 大底池保护和通用盈利保护。
+
+## 第5阶段：回放与灰度
+
+- `engine.policy_version`：本次部署的策略版本，写入策略日志和回放档案。
+- `start_hand_extended.near_allin_call_percent` / `near_allin_raise_percent`：调用方可选传入的尾筹比例；Call 或 Raise/Bet 后剩余筹码占操作前筹码不超过该百分比时，合法动作包含 All-in 则直接归并为 All-in。
+- `phase5.replay.enabled`：是否保存可重放的完整事件与响应；默认生产配置开启。
+- `phase5.replay.directory/file_prefix`：回放 JSONL 的目录和文件名前缀；每次进程启动创建一个文件。
+- `phase5.replay.flush_each_write`：每条事件后刷盘，生产建议开启，优先保证崩溃现场完整。
+- `phase5.gray.enabled`：内部策略灰度总开关。
+- `phase5.gray.mode`：`shadow` 只对采样手牌计算候选策略且仍返回基准策略；`canary` 对采样手牌真实返回候选策略。
+- `phase5.gray.percentage/salt`：0～100 的稳定手牌分桶比例和盐。同一玩家、牌桌、手牌始终落入同一组，不会在一手牌中切换策略。
+- `phase5.gray.candidate.*`：候选策略版本和可选参数覆盖；未填写的参数继承基准引擎。
+
+首次上线应使用 `shadow`，积累足够回放与对比数据后再将少量流量切到 `canary`。回放文件包含英雄手牌、公共牌和合法亮牌，属于生产敏感数据，需要限制目录权限与留存时间。

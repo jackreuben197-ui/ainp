@@ -1,0 +1,317 @@
+# engine: use normalized game state + equity + strategy; mock: interface diagnostics only.
+mode: engine
+server:
+  host: 0.0.0.0
+  port: 10086
+  read_header_timeout: 5s
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
+auth:
+  # Replace in the deployment environment through AINP_AUTH_TOKEN.
+  token: local-development-token
+admin:
+  enabled: true
+  path: /admin
+  log_path: build/nohup.out
+  expectations_path: conf/audit.yaml
+  report_path: reports/audit-runtime.json
+  # Scanning a large log is deliberately manual by default. Set a duration such
+  # as 30m only when periodic full-file analysis is acceptable.
+  refresh_interval: 0s
+state:
+  ttl: 24h
+  max_hands: 50000
+  prune_interval: 1m
+mock:
+  # Used only in mock mode or as engine fallback when fallback_to_mock is true.
+  enabled: true
+  action: check
+  value: 0
+  advise_on:
+    - deal_cards
+    - action
+    - flop
+    - turn
+    - river
+engine:
+  enabled: true
+  # Written into strategy/replay logs so reports can identify the deployed policy.
+  policy_version: phase5-profit-control-v2
+  decision_timeout: 150ms
+  # Recommended for a 4 CPU server; calculations wait instead of oversubscribing CPU.
+  max_concurrent: 3
+  fallback_to_mock: false
+  default_level: 3
+  advise_on:
+    - deal_cards
+    - action
+    - flop
+    - turn
+    - river
+  game_aliases:
+    NLH: NLH
+    NLHB: NLH
+    NLP: NLH
+    PLO: PLO4
+    PLO4: PLO4
+    PLO5: PLO5
+    PLO6: PLO6
+    SHORT_DECK: SHORT_DECK
+    SHORT_DECK_FIXED: SHORT_DECK_FIXED
+  equity:
+    enabled: true
+    default_samples: 5000
+    plo4_samples: 3000
+    plo5_samples: 2000
+    plo6_samples: 1500
+    max_exact_outcomes: 5000
+    preflop_lookup_enabled: true
+    auto_exact_enabled: true
+    cache_enabled: true
+    cache_capacity: 4096
+  strategy:
+    enabled: true
+    infer_legal_actions: true
+    min_raise_big_blinds: 1
+    # Compatibility fallback when the caller does not provide a near-All-in
+    # percentage. All-in must also be explicitly present in legal_actions.
+    collapse_near_allin: true
+    near_allin_remaining_chips: 0.01
+    # Preflop decisions use heads-up starting-hand strength; these tune field/reraise caution.
+    preflop_open_call_gap: 0.06
+    preflop_reraise_equity: 0.76
+    # A fresh player facing a raise uses only this fraction of the profile PFR
+    # as its 3-bet range. This avoids treating every PFR hand as a re-raise.
+    preflop_reraise_range_factor: 0.4
+    preflop_extra_raise_penalty: 0.025
+    preflop_multiway_penalty: 0.005
+    preflop_call_margin: 0.035
+    # For calls of at least this many BB after a raise, use the profile's
+    # narrowed continuation range instead of random-hand lookup equity alone.
+    preflop_large_call_threshold_bb: 10
+    # Protect high-card/air bluff catches from optimistic random-range equity.
+    flop_air_call_margin: 0.03
+    turn_air_call_margin: 0.08
+    river_air_call_margin: 0.15
+    repeated_air_call_penalty: 0.08
+    # Pocket pairs below one or more board cards are weak bluff catchers when
+    # facing turn/river bets; random-range equity otherwise overvalues them.
+    underpair_call_margin: 0.25
+    # Gutshot-like turn draws must clear an additional margin because random
+    # opponent ranges overvalue ace-high and other weak showdown value.
+    turn_weak_draw_call_margin: 0.18
+    # Treat a river pair supplied entirely by the board as a bluff catcher.
+    river_board_pair_call_margin: 0.15
+    river_missed_draw_call_margin: 0.08
+    reject_negative_ev_calls: true
+  # Table/player bankroll guard. It only tightens large normal-profile actions;
+  # aggressive_never_fold keeps its explicit always-continue behavior.
+  profit_control:
+    enabled: true
+    ttl: 12h
+    max_players: 10000
+    minimum_actions: 20
+    large_action_bb: 8
+    large_action_stack_ratio: 0.20
+    profit_trigger_bb: 20
+    profit_trigger_stack_ratio: 0.20
+    loss_trigger_bb: 20
+    loss_trigger_stack_ratio: 0.20
+    call_rate_target: 0.55
+    aggression_rate_target: 0.35
+    max_exposure_margin: 0.10
+    max_performance_margin: 0.08
+    max_action_mix_margin: 0.05
+    max_total_margin: 0.18
+  personality:
+    enabled: true
+    humanization_enabled: true
+    think_time_enabled: true
+    # Actually delay an advised HTTP response by the generated think time.
+    # The bot scheduler owns action delay; AinP only reports generated think time.
+    apply_think_time: false
+    use_ai_profile: true
+    default: balanced
+    # Legacy personality-only aliases remain supported. Do not duplicate keys in profiles.
+    profile_map: {}
+    # Resolved independently for every start_hand_extended event, so one AinP
+    # instance can serve mixed profiles and a bot may switch on its next hand.
+    # target_vpip/target_pfr explicitly control NLH preflop ranges. Level and
+    # personality continue to control postflop strength and humanization.
+    profiles:
+      FPCH_100_50:
+        personality: lag
+        level: 5
+        target_vpip: 1.00
+        target_pfr: 0.50
+        behavior_mode: aggressive_never_fold
+        preflop_raise_probability: 0.50
+        postflop_aggression_probability: 0.75
+        never_fold: true
+        audit_exempt: true
+        description: "Special action profile: 100% VPIP, 50% per-hand opening raise probability, no preflop re-raise, capped at one raise per postflop street, low-SPR air pot control, never folds and is reported separately"
+      FPCH_default:
+        personality: balanced
+        level: 5
+        target_vpip: 0.32
+        target_pfr: 0.16
+        description: "AiCon strongest profile (VPIP 32 / PFR 16); base postflop sizings 0.33/0.50/0.66/0.75 pot"
+      FPCH_defaul_S1:
+        personality: balanced
+        level: 5
+        target_vpip: 0.32
+        target_pfr: 0.16
+        # The AiCon source leaves this variant's sizing column blank, so it
+        # intentionally inherits AinP's base postflop sizing behavior.
+        description: "AiCon strongest profile, S1 variant (source does not specify postflop sizings; inherits base behavior)"
+      FPCH_defaul_S2:
+        personality: balanced
+        level: 5
+        target_vpip: 0.32
+        target_pfr: 0.16
+        postflop_sizings: [0.50, 0.66, 0.75, 1.00]
+        description: "AiCon strongest profile, S2 postflop sizings 0.50/0.66/0.75/1.00 pot"
+      FPCH_30_15:
+        personality: tag
+        level: 4
+        target_vpip: 0.30
+        target_pfr: 0.15
+        description: "AiCon tight, orderly profile (VPIP 30 / PFR 15)"
+      FPCH_30_15_S1:
+        personality: tag
+        level: 4
+        target_vpip: 0.30
+        target_pfr: 0.15
+        postflop_sizings: [0.50, 0.66, 1.00]
+        description: "AiCon 30/15 profile, S1 postflop sizings 0.50/0.66/1.00 pot"
+      FPCH_30_15_S2:
+        personality: tag
+        level: 4
+        target_vpip: 0.30
+        target_pfr: 0.15
+        postflop_sizings: [0.33, 0.50, 0.66]
+        description: "AiCon 30/15 profile, S2 postflop sizings 0.33/0.50/0.66 pot"
+      FPCH_39_14:
+        personality: balanced
+        level: 3
+        target_vpip: 0.39
+        target_pfr: 0.14
+        description: "AiCon medium profile (VPIP 39 / PFR 14), approximately 30% open-limp"
+      FPCH_39_14_S1:
+        personality: balanced
+        level: 3
+        target_vpip: 0.39
+        target_pfr: 0.14
+        postflop_sizings: [0.33, 0.50, 0.66]
+        description: "AiCon 39/14 profile, S1 postflop sizings 0.33/0.50/0.66 pot"
+      FPCH_39_14_S2:
+        personality: balanced
+        level: 3
+        target_vpip: 0.39
+        target_pfr: 0.14
+        postflop_sizings: [0.33, 0.50, 0.75]
+        description: "AiCon 39/14 profile, S2 postflop sizings 0.33/0.50/0.75 pot"
+      FPCH_54_11:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.54
+        target_pfr: 0.11
+        description: "AiCon weak profile (VPIP 54 / PFR 11), approximately 45% open-limp"
+      FPCH_54_11_S1:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.54
+        target_pfr: 0.11
+        postflop_sizings: [0.50, 0.66]
+        description: "AiCon 54/11 profile, S1 postflop sizings 0.50/0.66 pot"
+      FPCH_54_11_S2:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.54
+        target_pfr: 0.11
+        postflop_sizings: [0.33, 0.66]
+        description: "AiCon 54/11 profile, S2 postflop sizings 0.33/0.66 pot"
+      FPCH_60_5:
+        personality: calling_station
+        level: 1
+        target_vpip: 0.60
+        target_pfr: 0.05
+        description: "AiCon weak profile (VPIP 60 / PFR 5), approximately 55% open-limp"
+      FPCH_60_5_S1:
+        personality: calling_station
+        level: 1
+        target_vpip: 0.60
+        target_pfr: 0.05
+        postflop_sizings: [0.50, 0.66]
+        description: "AiCon 60/5 profile, S1 postflop sizings 0.50/0.66 pot"
+      FPCH_60_5_S2:
+        personality: calling_station
+        level: 1
+        target_vpip: 0.60
+        target_pfr: 0.05
+        postflop_sizings: [0.33, 0.75]
+        description: "AiCon 60/5 profile, S2 postflop sizings 0.33/0.75 pot"
+      FPCH_60_10:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.60
+        target_pfr: 0.10
+        description: "AiCon weak profile (VPIP 60 / PFR 10), approximately 50% open-limp"
+      FPCH_60_10_S1:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.60
+        target_pfr: 0.10
+        postflop_sizings: [0.50, 0.66]
+        description: "AiCon 60/10 profile, S1 postflop sizings 0.50/0.66 pot"
+      FPCH_60_10_S2:
+        personality: calling_station
+        level: 2
+        target_vpip: 0.60
+        target_pfr: 0.10
+        postflop_sizings: [0.50, 0.75]
+        description: "AiCon 60/10 profile, S2 postflop sizings 0.50/0.75 pot"
+      FPCH_90_5:
+        personality: calling_station
+        level: 1
+        target_vpip: 0.90
+        target_pfr: 0.05
+        # Loose preflop, disciplined postflop: once the pot reaches 20BB, do
+        # not continue growing it below 58% estimated equity.
+        large_pot_threshold_bb: 20
+        large_pot_min_equity: 0.58
+        description: "AiCon VPIP 90 / PFR 5 profile with AinP 20BB large-pot equity protection"
+  opponent_model:
+    enabled: true
+    max_players: 10000
+    dedupe_window: 256
+phase5:
+  replay:
+    # Records complete ordered API events and responses for deterministic offline replay.
+    # Files can contain visible cards; protect this directory as production data.
+    enabled: true
+    directory: data/replay
+    file_prefix: events
+    flush_each_write: true
+  gray:
+    # shadow: production returns control while sampled hands also evaluate candidate.
+    # canary: sampled hands return candidate. Assignment is deterministic per hand/player.
+    enabled: false
+    mode: shadow
+    percentage: 10
+    salt: ainp-gray-v1
+    candidate:
+      policy_version: phase5-candidate-v1
+      # Omitted values inherit the control engine configuration.
+      # default_level: 4
+      # preflop_open_call_gap: 0.05
+      # preflop_reraise_equity: 0.74
+      # preflop_extra_raise_penalty: 0.02
+      # preflop_multiway_penalty: 0.004
+      # preflop_call_margin: 0.04
+log:
+  level: info
+  access: true
+  events: true
+  strategy: true
