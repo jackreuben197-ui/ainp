@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 type resultCache struct {

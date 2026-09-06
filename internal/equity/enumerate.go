@@ -4,7 +4,7 @@ import (
 	"context"
 	"math/rand"
 
-	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 func enumerateExact(ctx context.Context, req preparedRequest, result *Result) error {

@@ -6,12 +6,12 @@ import (
 	"log/slog"
 	"testing"
 
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/game"
-	"gitlab.com/smoothsicst/ainp/internal/performance"
-	"gitlab.com/smoothsicst/ainp/internal/poker"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
-	"gitlab.com/smoothsicst/ainp/internal/strategy"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/performance"
+	"gitlab.com/smoothsics/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/strategy"
 )
 
 func TestProviderTracksRawTableProfitAndNormalActionMix(t *testing.T) {

@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/dashboard"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
-	"gitlab.com/smoothsicst/ainp/internal/service"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/dashboard"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/service"
 )
 
 func NewRouter(cfg config.Config, eventService *service.EventService, logger *slog.Logger) http.Handler {

@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/smoothsicst/ainp/internal/equity"
-	"gitlab.com/smoothsicst/ainp/internal/opponent"
-	"gitlab.com/smoothsicst/ainp/internal/personality"
-	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/opponent"
+	"gitlab.com/smoothsics/ainp/internal/personality"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 func TestStrategyDecisionLogIsStructuredAndDoesNotContainCards(t *testing.T) {

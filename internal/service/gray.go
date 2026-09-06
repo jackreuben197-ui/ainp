@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"math"
 
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/opponent"
-	"gitlab.com/smoothsicst/ainp/internal/performance"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/opponent"
+	"gitlab.com/smoothsics/ainp/internal/performance"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 type GrayDecisionProvider struct {

@@ -6,7 +6,7 @@ import (
 	"math"
 	"testing"
 
-	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 func TestExactKnownHandsWinAndTie(t *testing.T) {

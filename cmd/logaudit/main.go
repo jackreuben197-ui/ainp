@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/audit"
+	"gitlab.com/smoothsics/ainp/internal/audit"
 	"gopkg.in/yaml.v3"
 )
 

@@ -11,10 +11,10 @@ import (
 	"sort"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/equity"
-	"gitlab.com/smoothsicst/ainp/internal/poker"
-	"gitlab.com/smoothsicst/ainp/internal/strategy"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/strategy"
 )
 
 type profileResult struct {

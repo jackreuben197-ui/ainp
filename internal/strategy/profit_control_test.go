@@ -3,7 +3,7 @@ package strategy
 import (
 	"testing"
 
-	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/equity"
 )
 
 func standardProfitControl() ProfitControl {

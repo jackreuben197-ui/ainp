@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/poker"
 )
 
 type Expectations struct {

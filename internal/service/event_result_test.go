@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/smoothsicst/ainp/internal/game"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 func TestLogHandResultIncludesProfileStreetAndProfit(t *testing.T) {

@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/audit"
-	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/audit"
+	"gitlab.com/smoothsics/ainp/internal/config"
 	"gopkg.in/yaml.v3"
 )
 

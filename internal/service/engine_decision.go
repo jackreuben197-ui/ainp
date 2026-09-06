@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/equity"
-	"gitlab.com/smoothsicst/ainp/internal/game"
-	"gitlab.com/smoothsicst/ainp/internal/opponent"
-	"gitlab.com/smoothsicst/ainp/internal/performance"
-	"gitlab.com/smoothsicst/ainp/internal/personality"
-	"gitlab.com/smoothsicst/ainp/internal/poker"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
-	"gitlab.com/smoothsicst/ainp/internal/strategy"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/equity"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/opponent"
+	"gitlab.com/smoothsics/ainp/internal/performance"
+	"gitlab.com/smoothsics/ainp/internal/personality"
+	"gitlab.com/smoothsics/ainp/internal/poker"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/strategy"
 )
 
 const chipEpsilon = 1e-9

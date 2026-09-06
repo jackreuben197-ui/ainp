@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/smoothsicst/ainp/internal/game"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
-	"gitlab.com/smoothsicst/ainp/internal/replay"
-	"gitlab.com/smoothsicst/ainp/internal/store"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/replay"
+	"gitlab.com/smoothsics/ainp/internal/store"
 )
 
 type EventService struct {

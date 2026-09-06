@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"gitlab.com/smoothsicst/ainp/internal/config"
-	"gitlab.com/smoothsicst/ainp/internal/game"
-	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsics/ainp/internal/config"
+	"gitlab.com/smoothsics/ainp/internal/game"
+	"gitlab.com/smoothsics/ainp/internal/protocol"
 )
 
 type DecisionInput struct {
