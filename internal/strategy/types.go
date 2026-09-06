@@ -3,9 +3,9 @@ package strategy
 import (
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/opponent"
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/opponent"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 type Action string
@@ -176,19 +176,19 @@ type Features struct {
 }
 
 type Decision struct {
-	Action            Action
-	Amount            float64
-	RuleID            string
-	Tags              []string
-	Equity            equity.Result
-	PotOdds           float64
-	CallEV            float64
-	SPR               float64
-	Features          Features
-	PersonalityID     string
-	OpponentRead      OpponentRead
-	Humanized         bool
-	ThinkTime         time.Duration
+	Action        Action
+	Amount        float64
+	RuleID        string
+	Tags          []string
+	Equity        equity.Result
+	PotOdds       float64
+	CallEV        float64
+	SPR           float64
+	Features      Features
+	PersonalityID string
+	OpponentRead  OpponentRead
+	Humanized     bool
+	ThinkTime     time.Duration
 	ProfitControl ProfitControlMetrics
 }
 

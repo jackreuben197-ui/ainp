@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 const SchemaVersion = 1

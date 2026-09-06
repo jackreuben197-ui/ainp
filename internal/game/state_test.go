@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 func TestStateTracksTurnOrderBetsAndBoard(t *testing.T) {

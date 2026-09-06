@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 func TestGrayAssignmentIsStableForAHand(t *testing.T) {

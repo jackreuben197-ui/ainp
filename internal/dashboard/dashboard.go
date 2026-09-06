@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/audit"
-	"gitlab.com/masseffect/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/audit"
+	"gitlab.com/smoothsicst/ainp/internal/config"
 	"gopkg.in/yaml.v3"
 )
 

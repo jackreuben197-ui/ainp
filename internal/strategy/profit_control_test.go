@@ -3,7 +3,7 @@ package strategy
 import (
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
 )
 
 func standardProfitControl() ProfitControl {

@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/config"
 )
 
 func TestProfitSimulationIsDeterministic(t *testing.T) {

@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/game"
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/game"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 type DecisionInput struct {

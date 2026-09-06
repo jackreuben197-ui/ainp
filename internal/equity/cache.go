@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 type resultCache struct {

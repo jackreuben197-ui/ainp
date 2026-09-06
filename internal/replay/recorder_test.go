@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 func TestJSONLRecorderPersistsReplayableRecord(t *testing.T) {

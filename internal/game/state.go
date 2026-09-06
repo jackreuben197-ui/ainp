@@ -7,8 +7,8 @@ import (
 	"math"
 	"strings"
 
-	"gitlab.com/masseffect/ainp/internal/poker"
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 var ErrInvalidTransition = errors.New("invalid game-state transition")

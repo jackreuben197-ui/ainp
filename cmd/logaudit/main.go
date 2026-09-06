@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/audit"
+	"gitlab.com/smoothsicst/ainp/internal/audit"
 	"gopkg.in/yaml.v3"
 )
 

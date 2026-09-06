@@ -7,7 +7,7 @@ import (
 	"math"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 var (

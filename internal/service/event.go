@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/game"
-	"gitlab.com/masseffect/ainp/internal/protocol"
-	"gitlab.com/masseffect/ainp/internal/replay"
-	"gitlab.com/masseffect/ainp/internal/store"
+	"gitlab.com/smoothsicst/ainp/internal/game"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/replay"
+	"gitlab.com/smoothsicst/ainp/internal/store"
 )
 
 type EventService struct {

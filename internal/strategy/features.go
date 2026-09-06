@@ -3,8 +3,8 @@ package strategy
 import (
 	"fmt"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 func buildFeatures(req Request) (Features, error) {

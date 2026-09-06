@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/dashboard"
-	"gitlab.com/masseffect/ainp/internal/protocol"
-	"gitlab.com/masseffect/ainp/internal/service"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/dashboard"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/service"
 )
 
 func NewRouter(cfg config.Config, eventService *service.EventService, logger *slog.Logger) http.Handler {

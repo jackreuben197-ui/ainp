@@ -10,9 +10,9 @@ import (
 	"math/rand"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/personality"
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/personality"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 var ErrInvalidStrategyInput = errors.New("invalid strategy input")

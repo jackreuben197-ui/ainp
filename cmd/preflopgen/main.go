@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 const samplesPerClass = 20_000

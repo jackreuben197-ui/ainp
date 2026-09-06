@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"math"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/opponent"
-	"gitlab.com/masseffect/ainp/internal/performance"
-	"gitlab.com/masseffect/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/opponent"
+	"gitlab.com/smoothsicst/ainp/internal/performance"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
 )
 
 type GrayDecisionProvider struct {

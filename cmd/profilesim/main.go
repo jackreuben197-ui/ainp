@@ -11,10 +11,10 @@ import (
 	"sort"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/poker"
-	"gitlab.com/masseffect/ainp/internal/strategy"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/strategy"
 )
 
 type profileResult struct {

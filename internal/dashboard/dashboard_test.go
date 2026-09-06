@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/config"
 )
 
 func TestManagerRunsAuditAndPublishesReport(t *testing.T) {

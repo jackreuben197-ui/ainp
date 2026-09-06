@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/dashboard"
-	"gitlab.com/masseffect/ainp/internal/protocol"
-	"gitlab.com/masseffect/ainp/internal/service"
-	"gitlab.com/masseffect/ainp/internal/store"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/dashboard"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/service"
+	"gitlab.com/smoothsicst/ainp/internal/store"
 )
 
 func TestAiconCompatibleFlow(t *testing.T) {

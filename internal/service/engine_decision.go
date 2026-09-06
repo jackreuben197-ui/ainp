@@ -11,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/game"
-	"gitlab.com/masseffect/ainp/internal/opponent"
-	"gitlab.com/masseffect/ainp/internal/performance"
-	"gitlab.com/masseffect/ainp/internal/personality"
-	"gitlab.com/masseffect/ainp/internal/poker"
-	"gitlab.com/masseffect/ainp/internal/protocol"
-	"gitlab.com/masseffect/ainp/internal/strategy"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/game"
+	"gitlab.com/smoothsicst/ainp/internal/opponent"
+	"gitlab.com/smoothsicst/ainp/internal/performance"
+	"gitlab.com/smoothsicst/ainp/internal/personality"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/strategy"
 )
 
 const chipEpsilon = 1e-9

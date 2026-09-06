@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/equity"
-	"gitlab.com/masseffect/ainp/internal/opponent"
-	"gitlab.com/masseffect/ainp/internal/personality"
-	"gitlab.com/masseffect/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/equity"
+	"gitlab.com/smoothsicst/ainp/internal/opponent"
+	"gitlab.com/smoothsicst/ainp/internal/personality"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
 )
 
 func TestStrategyDecisionLogIsStructuredAndDoesNotContainCards(t *testing.T) {

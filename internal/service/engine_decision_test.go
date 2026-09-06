@@ -6,12 +6,12 @@ import (
 	"log/slog"
 	"testing"
 
-	"gitlab.com/masseffect/ainp/internal/config"
-	"gitlab.com/masseffect/ainp/internal/game"
-	"gitlab.com/masseffect/ainp/internal/performance"
-	"gitlab.com/masseffect/ainp/internal/poker"
-	"gitlab.com/masseffect/ainp/internal/protocol"
-	"gitlab.com/masseffect/ainp/internal/strategy"
+	"gitlab.com/smoothsicst/ainp/internal/config"
+	"gitlab.com/smoothsicst/ainp/internal/game"
+	"gitlab.com/smoothsicst/ainp/internal/performance"
+	"gitlab.com/smoothsicst/ainp/internal/poker"
+	"gitlab.com/smoothsicst/ainp/internal/protocol"
+	"gitlab.com/smoothsicst/ainp/internal/strategy"
 )
 
 func TestProviderTracksRawTableProfitAndNormalActionMix(t *testing.T) {
