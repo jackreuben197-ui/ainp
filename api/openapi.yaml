@@ -1,0 +1,764 @@
+openapi: 3.0.3
+info:
+  title: AiCon API
+  version: 1.0.1
+
+paths:
+  /v1/event:
+    post:
+      tags: [events]
+      summary: Event endpoint
+      operationId: event
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: access_token
+          in: query
+          required: false
+          schema:
+            type: string
+            description: >
+              Access token for authentication. Example: "your_token_here"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/EventApplied'
+        '208':
+          $ref: '#/components/responses/AlreadyApplied'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/check:
+    post:
+      tags: [checks]
+      summary: Check endpoint
+      description: >
+        This endpoint is used to check the status of the service.
+        It can be used to verify if the service is running and accessible.
+      operationId: check
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: access_token
+          in: query
+          required: false
+          schema:
+            type: string
+            description: >
+              Access token for authentication. Example: "your_token_here"
+      responses:
+        '200':
+          description: Check successful
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    EventRequest:
+      type: object
+      required: [seq_num, player_id, room_id, table_id, cmd, payload]
+      properties:
+        seq_num:
+          $ref: '#/components/schemas/SeqNum'
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        room_id:
+          type: string
+          description: Room ID
+          example: "ff"
+        table_id:
+          type: string
+          description: Table ID
+          example: "table"
+        hand_id:
+          type: string
+          description: ID of the hand (can be alphanumeric)
+          example: "10"
+        cmd:
+          type: string
+          enum:
+            - start_hand_extended
+            - deal_cards
+            - action
+            - tour_bonus
+            - show_cards
+            - flop
+            - turn
+            - river
+            - end_hand
+            - tour_exit
+          description: >
+            dictionary:
+              * start_hand_extended: payload must contains StartHandPayload
+              * deal_cards: payload must contains DealCardsPayload
+              * action: payload must contains ActionPayload
+              * tour_bonus: payload must contains TourBonusPayload
+              * show_cards: payload must contains ShowCardsPayload
+              * flop: payload must contains FlopPayload
+              * turn: payload must contains TurnPayload
+              * river: payload must contains RiverPayload
+              * end_hand: payload must contains EndHandPayload
+              * tour_exit: payload must contains TourExitPayload
+        payload:
+          oneOf:
+            - $ref: '#/components/schemas/StartHandPayload'
+            - $ref: '#/components/schemas/DealCardsPayload'
+            - $ref: '#/components/schemas/ActionPayload'
+            - $ref: '#/components/schemas/TourBonusPayload'
+            - $ref: '#/components/schemas/ShowCardsPayload'
+            - $ref: '#/components/schemas/FlopPayload'
+            - $ref: '#/components/schemas/TurnPayload'
+            - $ref: '#/components/schemas/RiverPayload'
+            - $ref: '#/components/schemas/EndHandPayload'
+            - $ref: '#/components/schemas/TourExitPayload'
+    # Common
+    SeqNum:
+      type: integer
+      format: uint64
+      minimum: 1
+      description: Sequence number in the context of hand
+      example: 1
+    # Payload Schemas
+    StartHandPayload:
+      type: object
+      required:
+        - game_type
+        - club_id
+        - ai_profile
+        - time
+        - small_blind
+        - big_blind
+        - time_to_act
+        - max_seat
+        - players
+      description: Payload for transmitting start_hand, ante and blinds simultaneously.
+      properties:
+        game_type:
+          type: string
+          # enum: [NLH, NLHB]
+        hand_id:
+          type: string
+          description: deprecated, use hand_id from the root level
+          example: "10"
+        club_id:
+          type: string
+          description: Club ID
+          example: "6996666"
+        alliance_id:
+          type: string
+          description: Alliance ID
+          example: "1003"
+        ai_profile:
+          type: string
+          description: AI profile
+          example: "WPC_90_5_1"
+        time:
+          type: integer
+          description: Time in milliseconds
+          format: uint64
+          minimum: 1
+          example: 1600000000000
+        small_blind:
+          type: number
+          description: Small blind
+          format: double
+          minimum: 0
+          example: 2
+        big_blind:
+          type: number
+          description: Big blind
+          format: double
+          minimum: 0
+          example: 4
+        straddle:
+          type: number
+          description: Straddle
+          format: double
+          minimum: 0
+          example: 8
+        ante:
+          type: number
+          description: Ante. ante and antes both must be present or absent
+          format: double
+          minimum: 0
+          example: 2
+        time_to_act:
+          type: integer
+          description: In milliseconds
+          format: uint64
+          example: 12000
+        time_to_insurance:
+          type: integer
+          description: In milliseconds
+          format: uint64
+          example: 12000
+        max_seat:
+          type: integer
+          description: Max seat
+          format: uint32
+          minimum: 2
+          maximum: 9
+          example: 8
+        squid_info:
+          type: object
+          description: Squid info
+          required: [price, score_limit, score_used, players]
+          properties:
+            price:
+              type: number
+              format: double
+              minimum: 0.01
+            score_limit:
+              type: integer
+              format: uint32
+              minimum: 1
+            score_used:
+              type: integer
+              format: uint32
+              minimum: 0
+            players:
+              type: integer
+              format: uint32
+              minimum: 2
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerStartHand'
+        antes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ante'
+        blinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blind'
+        tournament_info:
+          $ref: '#/components/schemas/TournamentInfo'
+
+    DealCardsPayload:
+      type: object
+      required: [cards]
+      properties:
+        cards:
+          type: string
+          # minLength: 4
+          maxLength: 12
+          example: Kd8s
+        legal_actions:
+          type: array
+          items: { $ref: '#/components/schemas/LegalAction' }
+        next_player_id:
+          type: string
+          description: Optional server-authoritative next actor; empty means no next actor.
+
+    ActionPayload:
+      type: object
+      required: [type, player_id]
+      properties:
+        type:
+          $ref: '#/components/schemas/ActionType'
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        value:
+          type: number
+          description: Amount (for call/raise/bet/allin)
+          format: double
+          minimum: 0
+          example: 80
+        value_mode:
+          type: string
+          enum: [increment, street_total]
+          description: Optional amount semantics. Defaults to increment; street_total is the player's total contribution on the current betting street.
+        legal_actions:
+          type: array
+          items: { $ref: '#/components/schemas/LegalAction' }
+        stack_after:
+          type: number
+          format: double
+          minimum: 0
+          description: Optional server-authoritative remaining stack of the acting player.
+        next_player_id:
+          type: string
+          description: Optional server-authoritative next actor; empty means no next actor.
+
+    LegalAction:
+      type: object
+      required: [type, min, max]
+      description: Server legal action; min and max are incremental action amounts in table chip units.
+      properties:
+        type: { $ref: '#/components/schemas/ActionType' }
+        min: { type: number, format: double, minimum: 0 }
+        max: { type: number, format: double, minimum: 0 }
+
+    ShowCardsPayload:
+      type: object
+      required: [player_id, cards]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        cards:
+          type: string
+          # minLength: 4
+          maxLength: 12
+          example: Kd8s
+
+    FlopPayload:
+      type: object
+      required: [cards]
+      properties:
+        cards:
+          type: string
+          # minLength: 6
+          # maxLength: 6
+          example: Kd8s2h
+        legal_actions:
+          type: array
+          items: { $ref: '#/components/schemas/LegalAction' }
+        next_player_id:
+          type: string
+          description: Optional server-authoritative next actor; empty means no next actor.
+
+    TurnPayload:
+      type: object
+      required: [cards]
+      properties:
+        cards:
+          type: string
+          # minLength: 2
+          # maxLength: 2
+          example: Kd
+        legal_actions:
+          type: array
+          items: { $ref: '#/components/schemas/LegalAction' }
+        next_player_id:
+          type: string
+          description: Optional server-authoritative next actor; empty means no next actor.
+
+    RiverPayload:
+      type: object
+      required: [cards]
+      properties:
+        cards:
+          type: string
+          # minLength: 2
+          # maxLength: 2
+          example: Kd
+        legal_actions:
+          type: array
+          items: { $ref: '#/components/schemas/LegalAction' }
+        next_player_id:
+          type: string
+          description: Optional server-authoritative next actor; empty means no next actor.
+
+    EndHandPayload:
+      type: object
+      required: [players]
+      properties:
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerEndHand'
+
+    TourBonusPayload:
+      type: object
+      required: [player_id, bonus_type, bonus_usd]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        bonus_type:
+          type: string
+          enum: [knockout]
+          description: >
+            Tournament bonus type:
+              * knockout: Knockout bonus
+          example: "knockout"
+        bonus_usd:
+          type: number
+          format: double
+          minimum: 0
+          description: Bonus amount in USD
+          example: 50.0
+
+    TourExitPayload:
+      type: object
+      required: [player_id, exit_place, prize_usd]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        exit_place:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Tournament exit place/position
+          example: 5
+        prize_usd:
+          type: number
+          format: double
+          minimum: 0
+          description: Prize amount in USD
+          example: 250.0
+
+    TournamentInfo:
+      type: object
+      required: [id, tour_type, num_all_players, num_players, num_prizes, start_stack, avg_stack, min_stack, max_stack]
+      properties:
+        time:
+          type: integer
+          format: uint64
+          description: Tournament timestamp
+          example: 1600000000000
+          minimum: 1
+        id:
+          type: string
+          description: Tournament ID
+          example: "tournament_123"
+        title:
+          type: string
+          description: Tournament title
+          example: "Daily Freezout"
+        tour_type:
+          type: string
+          enum: [freezout, reentry, rebuy]
+          description: >
+            Tournament type:
+              * freezout: Freezout tournament
+              * reentry: Re-entry tournament
+              * rebuy: Rebuy tournament
+          example: "freezout"
+        buyin_usd:
+          type: number
+          format: double
+          minimum: 0
+          description: Buy-in amount in USD
+          example: 100.0
+        num_all_players:
+          type: integer
+          format: uint32
+          minimum: 1
+          description: Number of all players in the tournament
+          example: 50
+        num_players:
+          type: integer
+          format: uint32
+          minimum: 1
+          description: Number of current players in the tournament
+          example: 20
+        num_prizes:
+          type: integer
+          format: uint32
+          minimum: 1
+          description: Number of prizes in the tournament
+          example: 3
+        start_stack:
+          type: number
+          format: double
+          minimum: 0
+          description: Starting stack
+          example: 1000
+        avg_stack:
+          type: number
+          format: double
+          minimum: 0
+          description: Average stack
+          example: 1500
+        min_stack:
+          type: number
+          format: double
+          minimum: 0
+          description: Minimum stack
+          example: 200
+        max_stack:
+          type: number
+          format: double
+          minimum: 0
+          description: Maximum stack
+          example: 5000
+        tour_deposit:
+          type: object
+          $ref: '#/components/schemas/TourDepositInfo'
+
+    TourDepositInfo:
+      type: object
+      required: [deposit_type, deposit_usd]
+      properties:
+        deposit_type:
+          type: string
+          enum: [buyin, reentry, rebuy, addon]
+          description: >
+            Tournament deposit type:
+              * buyin: Initial buy-in
+              * reentry: Re-entry deposit
+              * rebuy: Rebuy deposit
+              * addon: Add-on deposit
+          example: "buyin"
+        deposit_usd:
+          type: number
+          format: double
+          minimum: 0
+          description: Deposit amount in USD
+          example: 100.0
+
+    PlayerStartHand:
+      type: object
+      required: [player_id, nick, stack]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        nick:
+          type: string
+          example: "Player1"
+        stack:
+          type: number
+          format: double
+          minimum: 0
+          example: 1000
+        squid_score:
+          type: number
+          description: Squid score
+          format: double
+          minimum: 0
+          example: 0.5
+        is_ripper:
+          type: boolean
+          example: false
+        role:
+          type: string
+          enum: [bt, sb, bb, st]
+          example: bt
+        is_friend:
+          type: boolean
+          example: false
+
+    PlayerEndHand:
+      type: object
+      required: [player_id, profit]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        profit:
+          type: number
+          format: double
+          example: -8000
+        insurance:
+          type: number
+          format: double
+          example: -1000
+        cards:
+          type: string
+          minLength: 2
+          example: Kd8s
+        rake:
+          type: number
+          description: required if profit > 0
+          format: double
+          minimum: 0
+          example: 4
+        jackpot:
+          type: number
+          format: double
+          minimum: 0
+          example: 10
+        ripper:
+          type: number
+          format: double
+          example: -8000
+        squid:
+          type: number
+          format: double
+          minimum: 0
+          example: 10
+
+    Ante:
+      type: object
+      required: [player_id, value]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        value:
+          type: number
+          description: Amount
+          format: double
+          minimum: 0
+          example: 2
+
+    Blind:
+      type: object
+      required: [player_id, value, type]
+      properties:
+        player_id:
+          type: string
+          description: Player ID
+          example: "31719158"
+        value:
+          type: number
+          description: Amount
+          format: double
+          minimum: 0
+          example: 80
+        type:
+          type: string
+          description: >
+            dictionary:
+              * big_blind: Big blind
+              * small_blind: Small blind
+              * straddle: Straddle
+              * post: Penalty blind
+          enum: [big_blind, small_blind, straddle, post]
+          example: big_blind
+
+    # Response Schema
+    EventResponseBody:
+      type: object
+      required: [seq_num]
+      properties:
+        seq_num:
+          $ref: '#/components/schemas/SeqNum'
+        advise:
+          $ref: '#/components/schemas/AdviseResponse'
+        deviation:
+          description: Deviation from the advised action, present only if there was an advise on the previous step
+          $ref: '#/components/schemas/DeviationResponse'
+    AdviseResponse:
+      type: object
+      required: [type]
+      properties:
+        type:
+          $ref: '#/components/schemas/ActionType'
+        value:
+          type: number
+          description: Amount (for call/raise/bet/allin)
+          format: double
+          minimum: 0
+          example: 30.0
+        value_mode:
+          type: string
+          enum: [increment, street_total]
+          description: Amount semantics of value; AinP uses increment when pokerbot legal_actions are supplied.
+    DeviationResponse:
+      type: object
+      description: Deviation from the advised action
+      properties:
+        by_type:
+          $ref: '#/components/schemas/DeviationByType'
+        by_value:
+          $ref: '#/components/schemas/DeviationByValue'
+    DeviationByType:
+      type: object
+      required: [actual, expected]
+      properties:
+        actual:
+          description: Actual action taken
+          $ref: '#/components/schemas/ActionType'
+        expected:
+          description: Advised action
+          $ref: '#/components/schemas/ActionType'
+    DeviationByValue:
+      type: object
+      required: [actual, expected]
+      properties:
+        actual:
+          type: number
+          description: Actual amount
+          format: double
+          minimum: 0
+          example: 20.0
+        expected:
+          type: number
+          description: Advised amount
+          format: double
+          minimum: 0
+          example: 30.0
+    ActionType:
+      type: string
+      enum: [call, raise, bet, allin, fold, check]
+    ErrorResponse:
+      type: object
+      required: [error_code, request_id]
+      properties:
+        error_code:
+          type: string
+          enum: [
+            "Decode request body error",
+            "Missed field",
+            "Wrong value",
+            "Game logic error",
+            "Broken hand",
+            "Wrong seq_num",
+            "Server error",
+          ]
+          description: >
+            dictionary:
+              * Decode request body error: Error decoding the request body
+              * Missed field: Required field is missing
+              * Wrong value: Value is not valid
+              * Game logic error: Error in game logic
+              * Broken hand: Hand is broken, cannot process
+              * Wrong seq_num: Sequence number is incorrect
+              * Server error: Internal server error
+        message:
+          type: string
+          description: A human-readable error message
+          example: "Wrong value: payload.max_seat: must be a number"
+        request_id:
+          type: string
+          description: The unique ID of the request
+          example: "6cbc3176-0377-496c-b171-ac05aa07fb01"
+  responses:
+    EventApplied:
+      description: Event applied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EventResponseBody'
+    AlreadyApplied:
+      description: Event already applied, e.g., when the same event is triggered multiple times for the same hand.
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
